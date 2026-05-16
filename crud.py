@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, status
+from pydantic import BaseModel
 
 
 
@@ -42,3 +43,17 @@ def get_book(book_id: int):
         if book["id"] == book_id:
             return book
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Book not found")
+
+
+
+class Book(BaseModel):
+    id: int
+    title: str
+    author: str
+    
+@app.post("/books")
+def create_book(book: Book):
+    book_dict = book.dict()
+    book_dict["id"] = len(Books) + 1
+    Books.append(book_dict)
+    return book_dict
